@@ -1,6 +1,3 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,25 +12,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.TagFilter;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 
 /**
  * Tests the {@link SimpleJsonWriter} class.
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 @TestMethodOrder(MethodName.class)
 public class SimpleJsonWriterTest {
@@ -275,8 +283,10 @@ public class SimpleJsonWriterTest {
 	/**
 	 * Imperfect tests to try and determine if the approach has any issues.
 	 */
+	@Tag("approach")
 	@Nested
 	@TestMethodOrder(OrderAnnotation.class)
+	@TestInstance(Lifecycle.PER_CLASS)
 	public class D_ApproachTests {
 		/**
 		 * Tests that various methods do NOT appear in the source code.
@@ -288,8 +298,7 @@ public class SimpleJsonWriterTest {
 		public void testInvalidMethods(String method) {
 			String regex = "\\." + method + "\\(";
 			long count = Pattern.compile(regex).matcher(source).results().count();
-			assertTrue(count < 1,
-					"Found " + count + " calls of " + method + " in source code.");
+			Assertions.assertTrue(count < 1, "Found " + count + " calls of " + method + " in source code.");
 		}
 
 		/** Source code loaded as a String object. */
@@ -304,8 +313,31 @@ public class SimpleJsonWriterTest {
 		public void setup() throws IOException {
 			String name = SimpleJsonWriter.class.getSimpleName() + ".java";
 			Path path = Path.of("src", "main", "java", name);
-			assertTrue(Files.isReadable(path), "Unable to access source code.");
+			Assertions.assertTrue(Files.isReadable(path), "Unable to access source code.");
 			this.source = Files.readString(path, StandardCharsets.UTF_8);
+		}
+		
+		/**
+		 * Fails all approach tests if all other tests are not yet passing.
+		 */
+		@BeforeAll
+		public void enable() {
+			var request = LauncherDiscoveryRequestBuilder.request()
+					.selectors(DiscoverySelectors.selectClass(SimpleJsonWriterTest.class))
+					.filters(TagFilter.excludeTags("approach"))
+					.build();
+
+			var launcher = LauncherFactory.create();
+			var listener = new SummaryGeneratingListener();
+
+			Logger logger = Logger.getLogger("org.junit.platform.launcher");
+			logger.setLevel(Level.SEVERE);
+
+			launcher.registerTestExecutionListeners(listener);
+			launcher.execute(request);
+
+			Assertions.assertEquals(0, listener.getSummary().getTotalFailureCount(),
+					"Other tests must pass before appoarch tests pass!");
 		}
 	}
 
@@ -337,7 +369,7 @@ public class SimpleJsonWriterTest {
 	public static void compareFiles(Path actualPath, Path expectPath)
 			throws IOException {
 		String actual = Files.readString(actualPath, StandardCharsets.UTF_8).stripTrailing();
-		String expect = Files.readString(expectPath, StandardCharsets.UTF_8).stripTrailing() ;
+		String expect = Files.readString(expectPath, StandardCharsets.UTF_8).stripTrailing();
 	
 		String format = """
 				
@@ -345,6 +377,6 @@ public class SimpleJsonWriterTest {
 				""";
 		
 		String debug = String.format(format, actualPath, expectPath);
-		assertEquals(expect, actual, () -> debug);
+		Assertions.assertEquals(expect, actual, () -> debug);
 	}
 }

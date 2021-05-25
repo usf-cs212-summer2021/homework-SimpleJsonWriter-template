@@ -42,7 +42,7 @@ Note that strings and keys are always in `"` quotation marks, but numbers are no
 }
 ```
 
-The examples here happen to be sorted, but that is not necessary for JSON output. 
+The examples here happen to be sorted, but that is not necessary for JSON output.
 
 Use `UTF8` when writing your files. See the Javadoc comments in the template code for additional details.
 
@@ -55,7 +55,7 @@ It is possible to pass the tests with a less-than ideal implementation. Focus fi
   - [ ] Reuse methods as much as possible. You should be able to use `asArray` within your `asNestedArray` method.
 
   - [ ] Try to avoid needing extra logic within your loops. For example, avoid testing *every* element to see if it is the last one.
-  
+
   - [ ] Try to reduce repeated code. If you notice you had to copy and paste a chunk of code, it might be a good to use move that logic into a method.
 
 The above does not need to be completed by the homework deadline, but will be required to pass code reviews for similar functionality in the projects.
@@ -87,9 +87,3 @@ Below are some hints that may help with this homework assignment:
   - The [official JSON documentation](http://www.json.org/) can be a little difficult to parse. There [are](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON) [many](https://en.wikipedia.org/wiki/JSON) [other](http://www.vogella.com/tutorials/JSON/article.html) [tutorials](https://www.google.com/search?q=json+examples) out there.
 
 These hints are *optional*. There may be multiple approaches to solving this homework.
-
-## Requirements ##
-
-See the Javadoc and `TODO` comments in the template code in the `src/main/java` directory for additional details. You must pass the tests provided in the `src/test/java` directory. Do not modify any of the files in the `src/test` directory.
-
-See the [Homework Guides](https://usf-cs212-spring2021.github.io/guides/homework/) for additional details on homework requirements and submission.

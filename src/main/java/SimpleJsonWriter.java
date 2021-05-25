@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 public class SimpleJsonWriter {
 	/**
@@ -31,8 +31,7 @@ public class SimpleJsonWriter {
 	 * @param level the initial indent level
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void asArray(Collection<Integer> elements, Writer writer,
-			int level) throws IOException {
+	public static void asArray(Collection<Integer> elements, Writer writer, int level) throws IOException {
 		// TODO Implement this method
 		throw new UnsupportedOperationException("Not yet implemented.");
 	}
@@ -45,14 +44,13 @@ public class SimpleJsonWriter {
 	 * @param level the initial indent level
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void asObject(Map<String, Integer> elements, Writer writer,
-			int level) throws IOException {
+	public static void asObject(Map<String, Integer> elements, Writer writer, int level) throws IOException {
 		// TODO Implement this method
 		throw new UnsupportedOperationException("Not yet implemented.");
 	}
 
 	/**
-	 * Writes the elements as a pretty JSON object with a nested array. The
+	 * Writes the elements as a pretty JSON object with nested arrays. The
 	 * generic notation used allows this method to be used for any type of map
 	 * with any type of nested collection of integer objects.
 	 *
@@ -61,9 +59,8 @@ public class SimpleJsonWriter {
 	 * @param level the initial indent level
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void asNestedArray(
-			Map<String, ? extends Collection<Integer>> elements, Writer writer,
-			int level) throws IOException {
+	public static void asNestedArray(Map<String, ? extends Collection<Integer>> elements, 
+			Writer writer, int level) throws IOException {
 		// TODO Implement this method
 		throw new UnsupportedOperationException("Not yet implemented.");
 		
@@ -94,12 +91,8 @@ public class SimpleJsonWriter {
 	 *
 	 * @see #asArray(Collection, Writer, int)
 	 */
-	public static void asArray(Collection<Integer> elements, Path path)
-			throws IOException {
-		try (
-				BufferedWriter writer = Files.newBufferedWriter(path,
-						StandardCharsets.UTF_8)
-		) {
+	public static void asArray(Collection<Integer> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asArray(elements, writer, 0);
 		}
 	}
@@ -113,18 +106,14 @@ public class SimpleJsonWriter {
 	 *
 	 * @see #asObject(Map, Writer, int)
 	 */
-	public static void asObject(Map<String, Integer> elements, Path path)
-			throws IOException {
-		try (
-				BufferedWriter writer = Files.newBufferedWriter(path,
-						StandardCharsets.UTF_8)
-		) {
+	public static void asObject(Map<String, Integer> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asObject(elements, writer, 0);
 		}
 	}
 
 	/**
-	 * Writes the elements as a nested pretty JSON object to file.
+	 * Writes the elements as a pretty JSON object with nested arrays to file.
 	 *
 	 * @param elements the elements to write
 	 * @param path the file path to use
@@ -132,13 +121,8 @@ public class SimpleJsonWriter {
 	 *
 	 * @see #asNestedArray(Map, Writer, int)
 	 */
-	public static void asNestedArray(
-			Map<String, ? extends Collection<Integer>> elements, Path path)
-			throws IOException {
-		try (
-				BufferedWriter writer = Files.newBufferedWriter(path,
-						StandardCharsets.UTF_8)
-		) {
+	public static void asNestedArray(Map<String, ? extends Collection<Integer>> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			asNestedArray(elements, writer, 0);
 		}
 	}
@@ -182,15 +166,14 @@ public class SimpleJsonWriter {
 	}
 
 	/**
-	 * Returns the elements as a nested pretty JSON object.
+	 * Returns the elements as a pretty JSON object with nested arrays.
 	 *
 	 * @param elements the elements to use
 	 * @return a {@link String} containing the elements in pretty JSON format
 	 *
 	 * @see #asNestedArray(Map, Writer, int)
 	 */
-	public static String asNestedArray(
-			Map<String, ? extends Collection<Integer>> elements) {
+	public static String asNestedArray(Map<String, ? extends Collection<Integer>> elements) {
 		try {
 			StringWriter writer = new StringWriter();
 			asNestedArray(elements, writer, 0);
@@ -209,8 +192,7 @@ public class SimpleJsonWriter {
 	 * @param level the number of times to indent
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void indent(String element, Writer writer, int level)
-			throws IOException {
+	public static void indent(String element, Writer writer, int level) throws IOException {
 		writer.write("\t".repeat(level));
 		writer.write(element);
 	}
@@ -224,8 +206,7 @@ public class SimpleJsonWriter {
 	 * @param level the number of times to indent
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void quote(String element, Writer writer, int level)
-			throws IOException {
+	public static void quote(String element, Writer writer, int level) throws IOException {
 		writer.write("\t".repeat(level));
 		writer.write('"');
 		writer.write(element);

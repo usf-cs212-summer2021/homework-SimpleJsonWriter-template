@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -286,7 +284,6 @@ public class SimpleJsonWriterTest {
 	@Tag("approach")
 	@Nested
 	@TestMethodOrder(OrderAnnotation.class)
-	@TestInstance(Lifecycle.PER_CLASS)
 	public class D_ApproachTests {
 		/**
 		 * Tests that various methods do NOT appear in the source code.
@@ -299,6 +296,30 @@ public class SimpleJsonWriterTest {
 			String regex = "\\." + method + "\\(";
 			long count = Pattern.compile(regex).matcher(source).results().count();
 			Assertions.assertTrue(count < 1, "Found " + count + " calls of " + method + " in source code.");
+		}
+		
+		/**
+		 * Causes this group of tests to fail if the other non-approach tests are
+		 * not yet passing.
+		 */
+		@Test
+		public void testOthersPassing() {
+			var request = LauncherDiscoveryRequestBuilder.request()
+					.selectors(DiscoverySelectors.selectClass(SimpleJsonWriterTest.class))
+					.filters(TagFilter.excludeTags("approach"))
+					.build();
+
+			var launcher = LauncherFactory.create();
+			var listener = new SummaryGeneratingListener();
+
+			Logger logger = Logger.getLogger("org.junit.platform.launcher");
+			logger.setLevel(Level.SEVERE);
+
+			launcher.registerTestExecutionListeners(listener);
+			launcher.execute(request);
+
+			Assertions.assertEquals(0, listener.getSummary().getTotalFailureCount(),
+					"Must pass other tests to earn credit for approach group!");
 		}
 
 		/** Source code loaded as a String object. */
@@ -315,29 +336,6 @@ public class SimpleJsonWriterTest {
 			Path path = Path.of("src", "main", "java", name);
 			Assertions.assertTrue(Files.isReadable(path), "Unable to access source code.");
 			this.source = Files.readString(path, StandardCharsets.UTF_8);
-		}
-		
-		/**
-		 * Fails all approach tests if all other tests are not yet passing.
-		 */
-		@BeforeAll
-		public void enable() {
-			var request = LauncherDiscoveryRequestBuilder.request()
-					.selectors(DiscoverySelectors.selectClass(SimpleJsonWriterTest.class))
-					.filters(TagFilter.excludeTags("approach"))
-					.build();
-
-			var launcher = LauncherFactory.create();
-			var listener = new SummaryGeneratingListener();
-
-			Logger logger = Logger.getLogger("org.junit.platform.launcher");
-			logger.setLevel(Level.SEVERE);
-
-			launcher.registerTestExecutionListeners(listener);
-			launcher.execute(request);
-
-			Assertions.assertEquals(0, listener.getSummary().getTotalFailureCount(),
-					"Other tests must pass before appoarch tests pass!");
 		}
 	}
 
